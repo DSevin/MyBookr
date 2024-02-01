@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
+import django_heroku
+import dj_database_url
+from decouple import config
 
 from configurations import Configuration, values
 
@@ -58,6 +61,7 @@ class Dev(Configuration):
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'whitenoise.middleware.WhiteNoiseMiddleware',
     ]
 
     ROOT_URLCONF = 'bookr.urls'
@@ -126,13 +130,18 @@ class Dev(Configuration):
     STATIC_URL = '/static/'
 
     STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+    
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     MEDIA_URL = '/media/'
     INTERNAL_IPS = ['127.0.0.1']
     CRISPY_TEMPLATE_PACK = 'bootstrap4'
+    
 
 
 class Prod(Dev):
     DEBUG = False
     SECRET_KEY = values.SecretValue()
+    
+django_heroku.settings(locals())
